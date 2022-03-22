@@ -467,7 +467,13 @@ struct matrizDinamica
 		//cout << "insertando" << ingresado << " ubicado en (" << valorX << "," << valorY <<")\n";
 	}
 	void completarManual(int valorX, int valorY) {
-		bool verificarDato[] = { false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false};
+		int limite = valorX * valorY;
+		bool* verificarDato;
+		verificarDato = new bool[limite];
+		for (int i = 0; i < limite; i++)
+		{
+			verificarDato[i] = false;
+		}
 		int numero = 0;
 		cout << "Nota: el valor 0 sera el espacio vacio"<<endl;
 		for (int j = 0; j < valorY; j++)
@@ -475,21 +481,21 @@ struct matrizDinamica
 			
 			for (int i = 0; i < valorX; i++)
 			{
-				cout << "Ingresa un numero que este entre 0 y 15, para la Fila: " << j+1 << ", Columna: " << i+1 << endl;
+				cout << "Ingresa un numero que este entre 0 y "<< (limite - 1) <<", para la Fila: " << j+1 << ", Columna: " << i+1 << endl;
 				cin >> numero;
 
-				if (numero < 0 || numero> 15) {
-					while (numero < 0 || numero>15) {
-						cout << "Numero ingresado se encuentra fuera del rango 0-15, ingresa otro numero" << endl;
+				if (numero < 0 || numero> (limite - 1)) {
+					while (numero < 0 || numero> (limite - 1)) {
+						cout << "Numero ingresado se encuentra fuera del rango 0-" << (limite - 1) << ", ingresa otro numero" << endl;
 						cin >> numero;
 					}
 				}
 				if (verificarDato[numero] == true) {
 					while (verificarDato[numero] == true) {
-						cout << "Numero ya ingresado anteriormente, introduzca otro numero entre 0 y 15" << endl;
+						cout << "Numero ya ingresado anteriormente, introduzca otro numero entre 0 y " << (limite - 1) << endl;
 						cin >> numero;
-						if (numero > 15 || numero < 0) {
-							while (numero < 0 || numero>15) {
+						if (numero > (limite - 1) || numero < 0) {
+							while (numero < 0 || numero>(limite - 1)) {
 								cout << "Ingresa un numero que este entre 0 y 15, para la Fila: " << j + 1 << ", Columna: " << i + 1 << endl;
 								cin >> numero;
 							}
@@ -502,7 +508,13 @@ struct matrizDinamica
 		}
 	}
 	void completarAleatorio(int valorX, int valorY) {
-		bool verificarRepitencia[] = { false,false,false,false,false,false,false,false,false,false,false,false,false,false,false };
+		int limite = valorX * valorY;
+		bool *verificarRepitencia;
+		verificarRepitencia = new bool[limite];
+		for (int i = 0; i < limite; i++)
+		{
+			verificarRepitencia[i] = false;
+		}
 		int almacenamiento = 0;
 		int numeroAleatorio = 0;
 		for (int j = 0; j < valorY; j++)
@@ -510,16 +522,16 @@ struct matrizDinamica
 
 			for (int i = 0; i < valorX; i++)
 			{
-				srand(time(NULL));//que sean distintos cada vez los random
-				numeroAleatorio = 1 + rand() % 15;
+				//srand(time(NULL));//que sean distintos cada vez los random
+				numeroAleatorio = 1 + rand() % (limite -1);
 				almacenamiento = numeroAleatorio - 1;
-				if (i == 3 && j == 3) {
+				if (i == valorX - 1 && j == valorY-1) {
 					ingresar(i, j, 0);
 				}
 				else {
 					if (verificarRepitencia[almacenamiento] == true) {
 						while (verificarRepitencia[almacenamiento] == true) {
-							numeroAleatorio = 1 + rand() % 15;
+							numeroAleatorio = 1 + rand() % (limite - 1);
 							almacenamiento = numeroAleatorio - 1;
 						}
 					}
@@ -529,38 +541,96 @@ struct matrizDinamica
 			}
 		}
 	}
-	void imprimir() {
-		for (int i = 0; i < 4; i++)
+	
+	void imprimir(int valorX) {
+		for (int i = 0; i < valorX; i++)
 		{
-			cout << this->lado->search(i)->row->start->valorData;
-			if (this->lado->search(i)->row->start->valorData > 9) {
-				cout << " |";
+			crearNodo* tmp = this->lado->search(i)->row->start;
+			while (tmp != NULL)
+			{
+				cout << tmp->valorData;
+				if (tmp->valorData > 9) {
+					cout << " |";
+				}
+				else {
+					cout << "  |";
+				}
+				tmp = tmp->right;
 			}
-			else {
-				cout << "  |";
-			}
-			cout << this->lado->search(i)->row->start->right->valorData;
-			if (this->lado->search(i)->row->start->right->valorData > 9) {
-				cout << " |";
-			}
-			else {
-				cout << "  |";
-			}
-			cout << this->lado->search(i)->row->start->right->right->valorData;
-			if (this->lado->search(i)->row->start->right->right->valorData > 9) {
-				cout << " |";
-			}
-			else {
-				cout << "  |";
-			}
-			cout << this->lado->search(i)->row->start->right->right->right->valorData;
-			if (this->lado->search(i)->row->start->right->right->right->valorData > 9) {
-				cout << " |\n";
-			}
-			else {
-				cout << "  |\n";
+			cout << "\n";
+		}
+	}
+	void completarManualNivelesMas(int valorX, int valorY, int contadorNumerosAleatorios) {
+		int limite = valorX * valorY;
+		int capacidadVerificar = valorX * valorY * contadorNumerosAleatorios;
+		int inicioManual = capacidadVerificar - limite;
+		bool* verificarDato;
+		verificarDato = new bool[limite];
+		for (int i = 0; i < limite; i++)
+		{
+			verificarDato[i] = false;
+		}
+		int numero = 0;
+		for (int j = 0; j < valorY; j++)
+		{
+
+			for (int i = 0; i < valorX; i++)
+			{
+				cout << "Ingresa un numero que este entre "<< inicioManual <<" y " << (capacidadVerificar - 1) << ", para la Fila: " << j + 1 << ", Columna: " << i + 1 << endl;
+				cin >> numero;
+
+				if (numero < inicioManual || numero>(capacidadVerificar - 1)) {
+					while (numero < inicioManual || numero>(capacidadVerificar - 1)) {
+						cout << "Numero ingresado se encuentra fuera del rango " << inicioManual << "-" << (capacidadVerificar - 1) << ", ingresa otro numero" << endl;
+						cin >> numero;
+					}
+				}
+				if (verificarDato[numero] == true) {
+					while (verificarDato[numero] == true) {
+						cout << "Numero ya ingresado anteriormente, introduzca otro numero entre " << inicioManual << " y " << (capacidadVerificar - 1) << endl;
+						cin >> numero;
+						if (numero > (capacidadVerificar - 1) || numero < inicioManual) {
+							while (numero < inicioManual || numero>(capacidadVerificar - 1)) {
+								cout << "Ingresa un numero que este entre " << inicioManual << " y " << (capacidadVerificar - 1) << ", para la Fila: " << j + 1 << ", Columna: " << i + 1 << endl;
+								cin >> numero;
+							}
+						}
+					}
+				}
+				ingresar(i, j, numero);
+				verificarDato[numero] = true;
 			}
 		}
 	}
-	
+	void completarAleatorioNivelesMas(int valorX, int valorY,int contadorNumerosAleatorios) {
+		
+		int limite = valorX * valorY;
+		int capacidadVerificar = valorX * valorY * contadorNumerosAleatorios;
+		int inicioAleatorio = capacidadVerificar - limite;
+		bool* verificarRepitencia;
+		verificarRepitencia = new bool[limite];
+		for (int i = 0; i < limite; i++)
+		{
+			verificarRepitencia[i] = false;
+		}
+		int almacenamiento = 0;
+		int numeroAleatorio = 0;
+		for (int j = 0; j < valorY; j++)
+		{
+			for (int i = 0; i < valorX; i++)
+			{
+				//srand(time(NULL));//que sean distintos cada vez los random
+				numeroAleatorio = inicioAleatorio + (rand() % limite);
+				almacenamiento = numeroAleatorio -inicioAleatorio;
+				if (verificarRepitencia[almacenamiento] == true) {
+					while (verificarRepitencia[almacenamiento] == true) {
+						numeroAleatorio = inicioAleatorio + (rand() % limite);
+						almacenamiento = numeroAleatorio - inicioAleatorio;
+					}
+				}
+				ingresar(i, j, numeroAleatorio);
+				verificarRepitencia[almacenamiento] = true;
+			}
+		}
+	}
 };

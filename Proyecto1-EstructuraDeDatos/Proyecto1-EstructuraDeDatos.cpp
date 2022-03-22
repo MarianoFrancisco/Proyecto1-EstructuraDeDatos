@@ -15,6 +15,11 @@ int puntajeTotal=0;
 int pasosTotalesRealizados=0;
 float tiempoPartida=0;
 int posicionAlcanzada = 0;
+int cantidadNiveles = 0;
+int contadorNumerosNiveles = 0;
+bool repetirNumeroNivel = 0;
+int x = 0;
+int y = 0;
 bool cicloRepetir = true;
 bool cicloRepetirJugar = true;
 bool cicloRepetirJugando = true;
@@ -34,10 +39,15 @@ void localizarValorCero();
 //matrices
 void llenarMatrizAleatoria();
 void llenarMatrizManual();
+void llenarMatrizAleatoriaNivelesMas();
+void llenarMatrizManualNivelesMas();
 matrizDinamica* matriz;
 matrizDinamica* matrizReinicio;
+vector<matrizDinamica*> tableros;
+vector<matrizDinamica*> tablerosReinicio;
 int main()
 {
+    srand(time(NULL));//que sean distintos cada vez los random
     cout << "****************** Bienvenido al juego de 15 ****************** \n"
         "-> Ingresa tu nombre " << endl;
     cin >> nombreJugador;
@@ -48,12 +58,23 @@ int main()
 //llenar matriz aleatoria
 void llenarMatrizAleatoria() {
     matriz = new matrizDinamica();
-    matriz->completarAleatorio(4, 4);
+    matriz->completarAleatorio(y, x);
 }
 //llenar matriz aleatoria
 void llenarMatrizManual() {
     matriz = new matrizDinamica();
-    matriz->completarManual(4, 4);
+    matriz->completarManual(y, x);
+}
+//llenar matriz aleatoria niveles mas
+void llenarMatrizAleatoriaNivelesMas() {
+    matriz = new matrizDinamica();
+    matriz->completarAleatorioNivelesMas(y, x,contadorNumerosNiveles);
+}
+
+//llenar matriz aleatoria niveles mas
+void llenarMatrizManualNivelesMas() {
+    matriz = new matrizDinamica();
+    matriz->completarManualNivelesMas(y, x, contadorNumerosNiveles);
 }
 
 void localizarValorCero() {
@@ -75,6 +96,27 @@ void menu(){
             switch (opcion)
             {
             case 1:
+                cout << "->Ingresa la cantidad de filas del tablero" << endl;
+                cin >> x;
+                while (x < 1)
+                {
+                    cout << "* La cantidad de filas tiene que tener minimo 1, ingrese nuevamente la cantidad *" << endl;
+                    cin >> x;
+                }
+                cout << "->Ingresa la cantidad de columnas del tablero" << endl;
+                cin >> y;
+                while (y < 1)
+                {
+                    cout << "* La cantidad de columnas tiene que tener minimo 1, ingrese nuevamente la cantidad *" << endl;
+                    cin >> y;
+                }
+                cout << "->Ingresa la cantidad de niveles que deseas, minimo 1" << endl;
+                cin >> cantidadNiveles;
+                while (cantidadNiveles<1)
+                {
+                    cout << "* La cantidad de niveles tiene que tener minimo 1, ingrese nuevamente la cantidad *" << endl;
+                    cin >> cantidadNiveles;
+                }
                 opcionesJugar();
                 break;
             case 2:
@@ -136,23 +178,25 @@ void jugando() {
         {
         case 1:
             cout << "* arriba *" << endl;
-            matriz->imprimir();
+            matriz->imprimir(x);
             break;
         case 2:
             cout << "* abajo *" << endl;
-            matriz->imprimir();
+            matriz->imprimir(x);
             break;
         case 3:
             cout << "* izquierda *" << endl;
-            matriz->imprimir();
+            matriz->imprimir(x);
             break;
         case 4:
             cout << "* derecha *" << endl;
-            matriz->imprimir();
+            matriz->imprimir(x);
             break;
         case 5:
             cout << "* Juego reiniciado *" << endl;
-            matriz = matrizReinicio;
+            tableros = tablerosReinicio;
+            tiempo = clock();
+            pasosTotalesRealizados = 0;
             break;
         case 6:
             cicloRepetirJugando = false;
@@ -175,6 +219,7 @@ void jugando() {
 //Jugar
 void opcionesJugar() {
     cicloRepetirJugar = true;
+    contadorNumerosNiveles = 2;
     while (cicloRepetirJugar) {
         cout << "Jugando\n"
             "-> Ingresa una opcion para continuar\n"
@@ -185,21 +230,45 @@ void opcionesJugar() {
         switch (opcionJugar)
         {
         case 1:
+            cout << "Llenar matriz de nivel: " << 1 << endl;
             llenarMatrizManual();
-            cout << "* Matriz creada *" << endl;
-            matrizReinicio = matriz;
-            matriz->imprimir();
+            cout << "* Tablero nivel "<<1<<" creado * " << endl;
+            matriz->imprimir(x);
+            tableros.push_back(matriz);
+            tablerosReinicio.push_back(matriz);
+            for (int i = 1; i < cantidadNiveles; i++)
+            {
+                cout << "Llenar matriz de nivel: " << i+1 << endl;
+                llenarMatrizManualNivelesMas();
+                cout << "* Tablero nivel " << i+1 << " creado * " << endl;
+                matriz->imprimir(x);
+                tableros.push_back(matriz);
+                tablerosReinicio.push_back(matriz);
+                contadorNumerosNiveles++;
+            }
             jugando();
             cicloRepetirJugar = false;
             break;
         case 2:
+            cout << "Llenar matriz de nivel: " << + 1 << endl;
             llenarMatrizAleatoria();
-            cout << "* Matriz creada *" << endl;
-            matrizReinicio = matriz;
-            matriz->imprimir();
+            cout << "* Tablero nivel " << 1 << " creado * " << endl;
+            matriz->imprimir(x);
+            tableros.push_back(matriz);
+            tablerosReinicio.push_back(matriz);
+            for (int i = 1; i < cantidadNiveles; i++)
+            {
+                cout << "Llenar matriz de nivel: " << i + 1 << endl;
+                llenarMatrizAleatoriaNivelesMas();
+                cout << "* Tablero nivel " << i+1 << " creado * " << endl;
+                matriz->imprimir(x);
+                tableros.push_back(matriz);
+                tablerosReinicio.push_back(matriz);
+                contadorNumerosNiveles++;
+            }
             jugando();
             cicloRepetirJugar = false;
-            break;
+            break; 
         case 3:
             menu();
             break;
