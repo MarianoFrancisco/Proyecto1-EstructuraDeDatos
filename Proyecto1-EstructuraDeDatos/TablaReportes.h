@@ -26,6 +26,12 @@ public:
     int getPosicionReporte() {
         return this->posicionReporte;
     }
+    void setPosicionReporte(int nuevaPosicion) {
+        this->posicionReporte=nuevaPosicion;
+    }
+    int getPunteoReporte() {
+        return this->punteoReporte;
+    }
     void mostrarTabla() {
         cout << "->Posicion: " << this->posicionReporte << "\n"
             "  ->Nombre de Jugador: " << this->nombreJugadorReporte << "\n"

@@ -764,10 +764,12 @@ struct matrizDinamica
 		for (int i = 0; i < valorX; i++)
 		{
 			crearNodo* tmp = this->lado->search(i)->row->start;
+
 			while (tmp != NULL)
 			{
 				if (tmp->valorData == 0) {
 					valorI = contador;
+					break;
 				}
 				tmp = tmp->right;
 			}
@@ -778,17 +780,26 @@ struct matrizDinamica
 	//cantidad de movimientos para encontrar el cero
 	int cantidadMovimientosCero(int valorX) {
 		int contadorMovimientos = 0;
+		int contadorTemporal = 0;
 		for (int i = 0; i < valorX; i++)
 		{
-			contadorMovimientos = 0;
+			if (contadorTemporal == 0) {
+				contadorMovimientos = 0;
+			}
 			crearNodo* tmp = this->lado->search(i)->row->start;
 			while (tmp != NULL)
 			{
 				if (tmp->valorData == 0) {
+					contadorTemporal = 1;
 					break;
 				}
-				tmp = tmp->right;
-				contadorMovimientos++;
+				if (contadorTemporal == 0) {
+					tmp = tmp->right;
+					contadorMovimientos++;
+				}
+				else {
+					break;
+				}
 			}
 		}
 		return contadorMovimientos;

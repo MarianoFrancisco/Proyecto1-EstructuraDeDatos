@@ -209,14 +209,9 @@ void jugando() {
                 cin >> nivelActual;
             }
             nivelActual = nivelActual - 1;
-            cout << nivelAnterior;
-            cout << nivelActual;
             valorI = tableros[nivelAnterior]->posicionCero(x);
             busquedaCero= tableros[nivelAnterior]->cantidadMovimientosCero(x);
-            cout << valorI;
-            cout << busquedaCero;
             valorRecuperacionNivel=tableros[nivelActual]->recuperarValorOtroNivel(valorI,busquedaCero);
-            cout << valorRecuperacionNivel;
             tableros[nivelAnterior]->actualizamosNivelAnterior(valorI,busquedaCero,valorRecuperacionNivel);
             tableros[nivelActual]->actualizamosNivelSiguiente(valorI, busquedaCero);
             cout << "* Nivel actualizado *" << endl;
@@ -252,23 +247,57 @@ void jugando() {
             {
                 sort(valoresUsuarioPunteo[i].begin(), valoresUsuarioPunteo[i].end());
             }
-            for (size_t i = 0; i < valoresPunteo.size()-1; i++)
-            {
-                if (valoresPunteo[0][i] == valoresUsuarioPunteo[0][i+1]) {
-                    puntajeTotal = puntajeTotal + 2;
+            if (cantidadNiveles==1) {
+                for (size_t i = 0; i < valoresPunteo[0].size() - 1; i++)
+                {
+                    if (valoresPunteo[0][i] == valoresUsuarioPunteo[0][i + 1]) {
+                        puntajeTotal = puntajeTotal + 2;
+                    }
                 }
             }
-            for (size_t i = 1; i < valoresPunteo.size(); i++)
-            {
-                for (size_t j = 0; j < valoresPunteo[i].size(); j++)
+            else {
+                for (size_t i = 0; i < valoresPunteo.size(); i++)
                 {
-                    if (valoresPunteo[i][j]== valoresUsuarioPunteo[i][j]) {
-                        puntajeTotal = puntajeTotal + 2;
+                    bool contieneCero = find(valoresPunteo[i].begin(), valoresPunteo[i].end(), 0) != valoresPunteo[i].end();
+                    if (contieneCero) {
+                        for (size_t k = 0; k < valoresPunteo[i].size() - 1; k++)
+                        {
+                            if (valoresPunteo[i][k] == valoresUsuarioPunteo[i][k + 1]) {
+                                puntajeTotal = puntajeTotal + 2;
+                            }
+                        }
+                    }
+                    else {
+                        for (size_t j = 0; j < valoresPunteo[i].size(); j++)
+                        {
+                            if (valoresPunteo[i][j] == valoresUsuarioPunteo[i][j]) {
+                                puntajeTotal = puntajeTotal + 2;
+                            }
+                        }
                     }
                 }
             }
             tiempo = (clock() - tiempo);
             tiempoPartida = float(tiempo) / CLOCKS_PER_SEC;
+            if (tablaReporteArreglo.size() == 0) {
+                posicionAlcanzada = 1;
+            }
+            else {
+                for (int i = 0; i < tablaReporteArreglo.size(); i++)
+                {
+                    if (puntajeTotal > tablaReporteArreglo[i].getPunteoReporte()) {
+                        posicionAlcanzada = tablaReporteArreglo[i].getPosicionReporte();
+                        for (int k = i; k < tablaReporteArreglo.size(); k++)
+                        {
+                            tablaReporteArreglo[k].setPosicionReporte(tablaReporteArreglo[k].getPosicionReporte() + 1);
+                        }
+                        break;
+                    }
+                    else {
+                        posicionAlcanzada= 1+tablaReporteArreglo[tablaReporteArreglo.size() - 1].getPosicionReporte();
+                    }
+                }
+            }
             agregarJuegoTabla.construirTabla(posicionAlcanzada, nombreJugador, puntajeTotal, tiempoPartida);
             tablaReporteArreglo.push_back(agregarJuegoTabla);
             reportes();
@@ -305,6 +334,17 @@ void opcionesJugar() {
             cout << endl;
             tableros.push_back(matriz);
             tablerosReinicio.push_back(matriz);
+            for (int i = 1; i < cantidadNiveles; i++)
+            {
+                cout << "Llenar matriz de nivel: " << i + 1 << endl;
+                llenarMatrizManualNivelesMas();
+                cout << "* Tablero nivel " << i + 1 << " creado * " << endl;
+                matriz->imprimir(x);
+                cout << endl;
+                tableros.push_back(matriz);
+                tablerosReinicio.push_back(matriz);
+                contadorNumerosNiveles++;
+            }
             jugando();
             cicloRepetirJugar = false;
             break;
