@@ -6,24 +6,15 @@
 #include <cstdlib>//new y delete
 #include <vector>
 #include <ctime>
+#include <algorithm>
 using namespace std;//imprimir algo en pantalla
 //creacio de variables
-int opcion;
-int opcionJugar;
-int opcionJugando;
-int puntajeTotal=0;
-int pasosTotalesRealizados=0;
+int opcion, opcionJugar, opcionJugando, puntajeTotal = 0, pasosTotalesRealizados = 0, posicionAlcanzada = 0, valorI = 0;
+int cantidadNiveles, contadorNumerosNiveles, x, y, capadidadTablaReporte, nivelActual = 0, nivelAnterior = 0, busquedaCero = 0;
+vector<vector<int>> valoresPunteo, valoresUsuarioPunteo;
+int valorRecuperacionNivel = 0;
 float tiempoPartida=0;
-int posicionAlcanzada = 0;
-int cantidadNiveles = 0;
-int contadorNumerosNiveles = 0;
-bool repetirNumeroNivel = 0;
-int x = 0;
-int y = 0;
-bool cicloRepetir = true;
-bool cicloRepetirJugar = true;
-bool cicloRepetirJugando = true;
-int capacidadTablaReporte;
+bool cicloRepetir=true,cicloRepetirJugar = true,cicloRepetirJugando = true;
 //tabla reportes
 class TablaReporte;
 vector<TablaReporte> tablaReporteArreglo;
@@ -35,7 +26,6 @@ void tablaResultados();
 void opcionesJugar();
 void jugando();
 void localizarValorCero();
-//void ordenarTabla(vector<TablaReporte> tabla, int start, int end);
 //matrices
 void llenarMatrizAleatoria();
 void llenarMatrizManual();
@@ -54,7 +44,6 @@ int main()
     menu();
     return 0;
 }
-
 //llenar matriz aleatoria
 void llenarMatrizAleatoria() {
     matriz = new matrizDinamica();
@@ -70,18 +59,14 @@ void llenarMatrizAleatoriaNivelesMas() {
     matriz = new matrizDinamica();
     matriz->completarAleatorioNivelesMas(y, x,contadorNumerosNiveles);
 }
-
 //llenar matriz aleatoria niveles mas
 void llenarMatrizManualNivelesMas() {
     matriz = new matrizDinamica();
     matriz->completarManualNivelesMas(y, x, contadorNumerosNiveles);
 }
-
-void localizarValorCero() {
-
-}
 //estructuramos menu
 void menu(){
+    
     while (cicloRepetir)
     {
         cin.exceptions(ios_base::failbit);
@@ -117,13 +102,19 @@ void menu(){
                     cout << "* La cantidad de niveles tiene que tener minimo 1, ingrese nuevamente la cantidad *" << endl;
                     cin >> cantidadNiveles;
                 }
+                nivelActual = 0;
                 opcionesJugar();
                 break;
             case 2:
                 reportes();
                 break;
             case 3:
-                tablaResultados();
+                if (tablaReporteArreglo.size()>0) {
+                    tablaResultados();
+                }
+                else {
+                    cout << "* Aun no hay partidas jugadas *" << endl;
+                }
                 break;
             case 4:
                 cout << "-> Ingresa tu nombre " << endl;
@@ -160,54 +151,131 @@ void reportes() {
 }
 //opciones para jugar
 void jugando() {
+    //reinicio de valores
+    pasosTotalesRealizados = 0;
+    puntajeTotal = 0;
+    posicionAlcanzada = 0;
     clock_t tiempo;
     tiempo = clock();
     TablaReporte agregarJuegoTabla = TablaReporte();
     cicloRepetirJugando = true;
     while (cicloRepetirJugando) {
-        cout << "Jugando\n"
-            "-> Ingresa una opcion para continuar\n"
+        cout << "* El nivel en el que te encuentras es: " << (nivelActual + 1)<<" *" << endl;
+        tableros[nivelActual]->imprimir(x);
+        cout << endl;
+        cout << "-> Ingresa una opcion para continuar\n"
             "1) Intercambiar bloque vacio con bloque de arriba\n"
             "2) Intercambiar bloque vacio con bloque de abajo\n"
             "3) Intercambiar bloque vacio con bloque de la izquierda\n"
             "4) Intercambiar bloque vacio con bloque de la derecha\n"
-            "5) Reiniciar el juego\n"
-            "6) Terminar el juego\n";
+            "5) Cambiar de nivel\n"
+            "6) Visualizar todos los niveles\n"
+            "7) Reiniciar el juego\n"
+            "8) Terminar el juego\n";
         cin >> opcionJugando;
         switch (opcionJugando)
         {
         case 1:
-            cout << "* arriba *" << endl;
-            matriz->imprimir(x);
+            cout << "* Intercambio bloque vacio con bloque de arriba *" << endl;
+            tableros[nivelActual]->imprimir(x);
+            pasosTotalesRealizados= pasosTotalesRealizados + tableros[nivelActual]->intercambioVacioArriba(x);
+            cout << endl;
             break;
         case 2:
-            cout << "* abajo *" << endl;
-            matriz->imprimir(x);
+            cout << "* Intercambio bloque vacio con bloque de abajo *" << endl;
+            tableros[nivelActual]->imprimir(x);
+            pasosTotalesRealizados = pasosTotalesRealizados + tableros[nivelActual]->intercambioVacioAbajo(x);
+            cout << endl;
             break;
         case 3:
-            cout << "* izquierda *" << endl;
-            matriz->imprimir(x);
+            cout << "* Intercambio bloque vacio con bloque de la izquierda *" << endl;
+            tableros[nivelActual]->imprimir(x);
+            pasosTotalesRealizados = pasosTotalesRealizados+tableros[nivelActual]->intercambioVacioIzquierda(x);
+            cout << endl;
             break;
         case 4:
-            cout << "* derecha *" << endl;
-            matriz->imprimir(x);
+            cout << "* Intercambio bloque vacio con bloque de la derecha *" << endl;
+            tableros[nivelActual]->imprimir(x);
+            pasosTotalesRealizados = pasosTotalesRealizados + tableros[nivelActual]->intercambioVacioDerecha(x);
+            cout << endl;
             break;
         case 5:
+            nivelAnterior = nivelActual;
+            cout << "->Ingresa el nivel al que quieres acceder, disponibles del 1-" << tableros.size() << endl;
+            cin >> nivelActual;
+            while (nivelActual < 1 || nivelActual>tableros.size())
+            {
+                cout << "* Ingresaste un valor que no se encuentra *" << endl;
+                cin >> nivelActual;
+            }
+            nivelActual = nivelActual - 1;
+            cout << nivelAnterior;
+            cout << nivelActual;
+            valorI = tableros[nivelAnterior]->posicionCero(x);
+            busquedaCero= tableros[nivelAnterior]->cantidadMovimientosCero(x);
+            cout << valorI;
+            cout << busquedaCero;
+            valorRecuperacionNivel=tableros[nivelActual]->recuperarValorOtroNivel(valorI,busquedaCero);
+            cout << valorRecuperacionNivel;
+            tableros[nivelAnterior]->actualizamosNivelAnterior(valorI,busquedaCero,valorRecuperacionNivel);
+            tableros[nivelActual]->actualizamosNivelSiguiente(valorI, busquedaCero);
+            cout << "* Nivel actualizado *" << endl;
+            pasosTotalesRealizados++;
+            break;
+        case 6:
+            for (size_t i = 0; i < tableros.size(); i++)
+            {
+                cout << "* Nivel: " << i + 1 << " *" << endl;
+                tableros[i]->imprimir(x);
+                cout <<endl;
+            }
+            break;
+        case 7:
             cout << "* Juego reiniciado *" << endl;
             tableros = tablerosReinicio;
             tiempo = clock();
             pasosTotalesRealizados = 0;
+            nivelActual = 0;
             break;
-        case 6:
+        case 8:
             cicloRepetirJugando = false;
             cout << "* Juego terminado *" << endl;
             /*agregarJuegoTabla.construirTabla(2, "mariano2", 4, 5);
             tablaReporteArreglo.push_back(agregarJuegoTabla);*/
+            //aca
+            for (int i = 0; i < cantidadNiveles; i++)
+            {
+                valoresPunteo.push_back(tableros[i]->pasarValoresPunteo(x));
+            }
+            valoresUsuarioPunteo = valoresPunteo;
+            for (size_t i = 0; i < valoresPunteo.size(); i++)
+            {
+                sort(valoresUsuarioPunteo[i].begin(), valoresUsuarioPunteo[i].end());
+            }
+            for (size_t i = 0; i < valoresPunteo.size()-1; i++)
+            {
+                if (valoresPunteo[0][i] == valoresUsuarioPunteo[0][i+1]) {
+                    puntajeTotal = puntajeTotal + 2;
+                }
+            }
+            for (size_t i = 1; i < valoresPunteo.size(); i++)
+            {
+                for (size_t j = 0; j < valoresPunteo[i].size(); j++)
+                {
+                    if (valoresPunteo[i][j]== valoresUsuarioPunteo[i][j]) {
+                        puntajeTotal = puntajeTotal + 2;
+                    }
+                }
+            }
             tiempo = (clock() - tiempo);
             tiempoPartida = float(tiempo) / CLOCKS_PER_SEC;
             agregarJuegoTabla.construirTabla(posicionAlcanzada, nombreJugador, puntajeTotal, tiempoPartida);
             tablaReporteArreglo.push_back(agregarJuegoTabla);
             reportes();
+            tableros.clear();
+            tablerosReinicio.clear();
+            valoresPunteo.clear();
+            valoresUsuarioPunteo.clear();
             menu();
             break;
         default:
@@ -234,18 +302,9 @@ void opcionesJugar() {
             llenarMatrizManual();
             cout << "* Tablero nivel "<<1<<" creado * " << endl;
             matriz->imprimir(x);
+            cout << endl;
             tableros.push_back(matriz);
             tablerosReinicio.push_back(matriz);
-            for (int i = 1; i < cantidadNiveles; i++)
-            {
-                cout << "Llenar matriz de nivel: " << i+1 << endl;
-                llenarMatrizManualNivelesMas();
-                cout << "* Tablero nivel " << i+1 << " creado * " << endl;
-                matriz->imprimir(x);
-                tableros.push_back(matriz);
-                tablerosReinicio.push_back(matriz);
-                contadorNumerosNiveles++;
-            }
             jugando();
             cicloRepetirJugar = false;
             break;
@@ -254,6 +313,7 @@ void opcionesJugar() {
             llenarMatrizAleatoria();
             cout << "* Tablero nivel " << 1 << " creado * " << endl;
             matriz->imprimir(x);
+            cout << endl;
             tableros.push_back(matriz);
             tablerosReinicio.push_back(matriz);
             for (int i = 1; i < cantidadNiveles; i++)
@@ -262,6 +322,7 @@ void opcionesJugar() {
                 llenarMatrizAleatoriaNivelesMas();
                 cout << "* Tablero nivel " << i+1 << " creado * " << endl;
                 matriz->imprimir(x);
+                cout << endl;
                 tableros.push_back(matriz);
                 tablerosReinicio.push_back(matriz);
                 contadorNumerosNiveles++;

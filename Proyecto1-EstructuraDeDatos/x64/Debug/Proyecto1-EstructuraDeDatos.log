@@ -1,8 +1,8 @@
 ﻿  Proyecto1-EstructuraDeDatos.cpp
-C:\Users\Maria\source\repos\Proyecto1-EstructuraDeDatos\Proyecto1-EstructuraDeDatos\Proyecto1-EstructuraDeDatos.cpp(50,15): warning C4244: 'argumento': conversión de 'time_t' a 'unsigned int'; posible pérdida de datos
-C:\Users\Maria\source\repos\Proyecto1-EstructuraDeDatos\Proyecto1-EstructuraDeDatos\Proyecto1-EstructuraDeDatos.cpp(284,72): warning C4267: 'argumento': conversión de 'size_t' a 'int'; posible pérdida de datos
-C:\Users\Maria\source\repos\Proyecto1-EstructuraDeDatos\Proyecto1-EstructuraDeDatos\MatrizEstructura.h(438): warning C4715: 'lados::search': no todas las rutas de acceso de control devuelven un valor
-C:\Users\Maria\source\repos\Proyecto1-EstructuraDeDatos\Proyecto1-EstructuraDeDatos\MatrizEstructura.h(294): warning C4715: 'encabezados::exist': no todas las rutas de acceso de control devuelven un valor
-C:\Users\Maria\source\repos\Proyecto1-EstructuraDeDatos\Proyecto1-EstructuraDeDatos\MatrizEstructura.h(422): warning C4715: 'lados::exist': no todas las rutas de acceso de control devuelven un valor
-C:\Users\Maria\source\repos\Proyecto1-EstructuraDeDatos\Proyecto1-EstructuraDeDatos\MatrizEstructura.h(310): warning C4715: 'encabezados::search': no todas las rutas de acceso de control devuelven un valor
+C:\Users\Maria\source\repos\Proyecto1-EstructuraDeDatos\Proyecto1-EstructuraDeDatos\Proyecto1-EstructuraDeDatos.cpp(40,15): warning C4244: 'argumento': conversión de 'time_t' a 'unsigned int'; posible pérdida de datos
+C:\Users\Maria\source\repos\Proyecto1-EstructuraDeDatos\Proyecto1-EstructuraDeDatos\Proyecto1-EstructuraDeDatos.cpp(345,72): warning C4267: 'argumento': conversión de 'size_t' a 'int'; posible pérdida de datos
+C:\Users\Maria\source\repos\Proyecto1-EstructuraDeDatos\Proyecto1-EstructuraDeDatos\MatrizEstructura.h(433): warning C4715: 'lados::search': no todas las rutas de acceso de control devuelven un valor
+C:\Users\Maria\source\repos\Proyecto1-EstructuraDeDatos\Proyecto1-EstructuraDeDatos\MatrizEstructura.h(289): warning C4715: 'encabezados::exist': no todas las rutas de acceso de control devuelven un valor
+C:\Users\Maria\source\repos\Proyecto1-EstructuraDeDatos\Proyecto1-EstructuraDeDatos\MatrizEstructura.h(417): warning C4715: 'lados::exist': no todas las rutas de acceso de control devuelven un valor
+C:\Users\Maria\source\repos\Proyecto1-EstructuraDeDatos\Proyecto1-EstructuraDeDatos\MatrizEstructura.h(305): warning C4715: 'encabezados::search': no todas las rutas de acceso de control devuelven un valor
   Proyecto1-EstructuraDeDatos.vcxproj -> C:\Users\Maria\source\repos\Proyecto1-EstructuraDeDatos\x64\Debug\Proyecto1-EstructuraDeDatos.exe

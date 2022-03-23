@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cstdlib>
+#include <vector>
 using namespace std;
 struct crearNodo 
 {
@@ -257,12 +258,6 @@ struct encabezados
 	}
 	void datosEncabezado() {
 		if (!emptyDato()) {
-			/*
-			nodoEncabezado* tmpDato = start;
-			while (tmpDato != NULL) {
-				cout << "valorX" << tmpDato->enX << endl;
-				tmpDato = tmpDato->next;
-			}*/
 			nodoEncabezado* tmpDato = start;
 			while (tmpDato != NULL) {
 				cout << "valorX" << tmpDato->enX << endl;
@@ -466,6 +461,7 @@ struct matrizDinamica
 		tmpL->row->ingresarDato(insertar);
 		//cout << "insertando" << ingresado << " ubicado en (" << valorX << "," << valorY <<")\n";
 	}
+	//llenar nuestros datos manualmente
 	void completarManual(int valorX, int valorY) {
 		int limite = valorX * valorY;
 		bool* verificarDato;
@@ -507,6 +503,7 @@ struct matrizDinamica
 			}
 		}
 	}
+	//llenar nuestros datos aleatoriamente
 	void completarAleatorio(int valorX, int valorY) {
 		int limite = valorX * valorY;
 		bool *verificarRepitencia;
@@ -541,7 +538,7 @@ struct matrizDinamica
 			}
 		}
 	}
-	
+	//imprimir nuestros datos
 	void imprimir(int valorX) {
 		for (int i = 0; i < valorX; i++)
 		{
@@ -560,6 +557,132 @@ struct matrizDinamica
 			cout << "\n";
 		}
 	}
+	//verificacion de punteo
+	
+	vector<int> pasarValoresPunteo(int valorX) {
+		vector<int> valorPunteo;
+		for (int i = 0; i < valorX; i++)
+		{
+			crearNodo* tmp = this->lado->search(i)->row->start;
+			while (tmp != NULL)
+			{
+				valorPunteo.push_back(tmp->valorData);
+				tmp = tmp->right;
+			}
+		}
+		return valorPunteo;
+	}
+	//Inercambio hacia arriba
+	int intercambioVacioArriba(int valorX) {
+		int valorTemporal;
+		int contadorPaso=0;
+		for (int i = 0; i < valorX; i++)
+		{
+			crearNodo* tmp = this->lado->search(i)->row->start;
+			while (tmp != NULL)
+			{
+				if (tmp->valorData==0) {
+					if (tmp->up ==NULL) {
+						cout << "* No hay ningun bloque existente arriba del espacio vacio *" << endl;
+					}
+					else {
+						valorTemporal = tmp->up->valorData;
+						tmp->up->valorData = 0;
+						tmp->valorData = valorTemporal;
+						contadorPaso = 1;
+					}
+				}
+				tmp = tmp->right;
+			}
+		}
+		return contadorPaso;
+	}
+	//intercambio hacia abajo
+	int intercambioVacioAbajo(int valorX) {
+		int valorTemporal;
+		int contadorPaso = 0;
+		int contadorTemporal = 0;
+		for (int i = 0; i < valorX; i++)
+		{
+			crearNodo* tmp = this->lado->search(i)->row->start;
+			while (tmp != NULL)
+			{
+				if (tmp->valorData == 0) {
+					if (tmp->down == NULL) {
+						if (contadorTemporal == 0) {
+							cout << "* No hay ningun bloque existente abajo del espacio vacio *" << endl;
+						}
+					}
+					else {
+						if (contadorTemporal ==0 ) {
+							cout << tmp->down->valorData;
+							valorTemporal = tmp->down->valorData;
+							tmp->down->valorData = 0;
+							tmp->valorData = valorTemporal;
+							contadorPaso = 1;
+							contadorTemporal = 1;
+							break;
+						}
+						
+					}
+				}
+				tmp = tmp->right;
+			}
+		}
+		return contadorPaso;
+	}
+	//Intercambio hacia la izquierda
+	int intercambioVacioIzquierda(int valorX) {
+		int contadorPaso = 0;
+		int valorTemporal;
+		for (int i = 0; i < valorX; i++)
+		{
+			crearNodo* tmp = this->lado->search(i)->row->start;
+			while (tmp != NULL)
+			{
+				if (tmp->valorData == 0) {
+					if (tmp->left == NULL) {
+						cout << "* No hay ningun bloque existente a la izquierda del espacio vacio *" << endl;
+					}
+					else {
+						valorTemporal = tmp->left->valorData;
+						tmp->left->valorData = 0;
+						tmp->valorData = valorTemporal;
+						contadorPaso = 1;
+					}
+				}
+				tmp = tmp->right;
+			}
+		}
+		return contadorPaso;
+	}
+	//intercambio hacia la derecha
+	int intercambioVacioDerecha(int valorX) {
+		int valorTemporal;
+		int contadorPaso=0;
+		for (int i = 0; i < valorX; i++)
+		{
+			crearNodo* tmp = this->lado->search(i)->row->start;
+			while (tmp != NULL)
+			{
+				if (tmp->valorData == 0) {
+					if (tmp->right == NULL) {
+						cout << "* No hay ningun bloque existente a la derecha del espacio vacio *" << endl;
+					}
+					else {
+						valorTemporal = tmp->right->valorData;
+						tmp->right->valorData = 0;
+						tmp->valorData = valorTemporal;
+						contadorPaso = 1;
+						break;
+					}
+				}
+				tmp = tmp->right;
+			}
+		}
+		return contadorPaso;
+	}
+	//llenar nuestros datos manualmente para nivel 2 en adelante
 	void completarManualNivelesMas(int valorX, int valorY, int contadorNumerosAleatorios) {
 		int limite = valorX * valorY;
 		int capacidadVerificar = valorX * valorY * contadorNumerosAleatorios;
@@ -602,6 +725,7 @@ struct matrizDinamica
 			}
 		}
 	}
+	//llenar nuestros datos aleatoriamente para nivel 2 en adelante
 	void completarAleatorioNivelesMas(int valorX, int valorY,int contadorNumerosAleatorios) {
 		
 		int limite = valorX * valorY;
@@ -631,6 +755,86 @@ struct matrizDinamica
 				ingresar(i, j, numeroAleatorio);
 				verificarRepitencia[almacenamiento] = true;
 			}
+		}
+	}
+	//buscar posicion donde se encuentra el cero
+	int posicionCero(int valorX) {
+		int valorI = 0;
+		int contador = 0;
+		for (int i = 0; i < valorX; i++)
+		{
+			crearNodo* tmp = this->lado->search(i)->row->start;
+			while (tmp != NULL)
+			{
+				if (tmp->valorData == 0) {
+					valorI = contador;
+				}
+				tmp = tmp->right;
+			}
+			contador++;
+		}
+		return valorI;
+	}
+	//cantidad de movimientos para encontrar el cero
+	int cantidadMovimientosCero(int valorX) {
+		int contadorMovimientos = 0;
+		for (int i = 0; i < valorX; i++)
+		{
+			contadorMovimientos = 0;
+			crearNodo* tmp = this->lado->search(i)->row->start;
+			while (tmp != NULL)
+			{
+				if (tmp->valorData == 0) {
+					break;
+				}
+				tmp = tmp->right;
+				contadorMovimientos++;
+			}
+		}
+		return contadorMovimientos;
+	}
+	//buscar posicion donde se encuentra el cero
+	int recuperarValorOtroNivel(int valorI, int contadorMovimientos) {
+		int recuperarValor;
+		crearNodo* tmp = this->lado->search(valorI)->row->start;
+		if (contadorMovimientos == 0) {
+			recuperarValor = tmp->valorData;
+		}
+		else {
+			for (int i = 0; i < contadorMovimientos; i++)
+			{
+				tmp = tmp->right;
+			}
+			recuperarValor=tmp->valorData;
+		}
+		return recuperarValor;
+	}
+	//actualizar a valor del otro nivel donde estaba el bloque vacio
+	void actualizamosNivelAnterior(int valorI, int contadorMovimientos,int valorRecuperado) {
+		crearNodo* tmp = this->lado->search(valorI)->row->start;
+		if (contadorMovimientos == 0) {
+			tmp->valorData = valorRecuperado;
+		}
+		else {
+			for (int i = 0; i < contadorMovimientos; i++)
+			{
+				tmp = tmp->right;
+			}
+			tmp->valorData = valorRecuperado;
+		}
+	}
+	//actualizar a cero la posicion enlazada
+	void actualizamosNivelSiguiente(int valorI,int contadorMovimientos) {
+		crearNodo* tmp = this->lado->search(valorI)->row->start;
+		if (contadorMovimientos == 0) {
+			tmp->valorData = 0;
+		}
+		else {
+			for (int i = 0; i < contadorMovimientos; i++)
+			{
+				tmp = tmp->right;
+			}
+			tmp->valorData = 0;
 		}
 	}
 };
