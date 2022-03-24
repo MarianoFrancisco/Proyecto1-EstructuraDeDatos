@@ -32,6 +32,9 @@ public:
     int getPunteoReporte() {
         return this->punteoReporte;
     }
+    float getTiempoPartida() {
+        return this->tiempoPartidaReporte;
+    }
     void mostrarTabla() {
         cout << "->Posicion: " << this->posicionReporte << "\n"
             "  ->Nombre de Jugador: " << this->nombreJugadorReporte << "\n"
