@@ -3,23 +3,27 @@
 #include <iostream>//entrada y salida de datos
 #include "MatrizEstructura.h"
 #include "TablaReportes.h"
+#include <string>
 #include <cstdlib>//new y delete
 #include <vector>
 #include <ctime>
 #include <algorithm>
+#include <fstream>
 using namespace std;//imprimir algo en pantalla
 //creacio de variables
 int opcion, opcionJugar, opcionJugando, puntajeTotal = 0, pasosTotalesRealizados = 0, posicionAlcanzada = 0, valorI = 0;
 int cantidadNiveles, contadorNumerosNiveles, x, y, capadidadTablaReporte, nivelActual = 0, nivelAnterior = 0, busquedaCero = 0;
 int temporalTableroSize=0;
-vector<vector<int>> valoresPunteo, valoresUsuarioPunteo;
-int valorRecuperacionNivel = 0;
+vector<char> vectorCaracteres;
+vector<int> vectoresCaracteresTemporal;
+vector<vector<int>> valoresPunteo, valoresUsuarioPunteo,valoresTableroArchivo;
+int valorRecuperacionNivel = 0,contadorTemporalNiveles=0;
 float tiempoPartida = 0;
-bool cicloRepetir = true, cicloRepetirJugar = true, cicloRepetirJugando = true;
+bool cicloRepetir = true, cicloRepetirJugar = true, cicloRepetirJugando = true,archivoCorrecto=true,verificarError=true;
 //tabla reportes
 class TablaReporte;
 vector<TablaReporte> tablaReporteArreglo;
-string nombreJugador = "",nombreTemporal="";
+string nombreJugador = "",nombreTemporal="", nombreArchivo="",cadenaTemporal="";
 //metodos usados
 void menu();
 void reportes();
@@ -27,11 +31,13 @@ void tablaResultados();
 void opcionesJugar();
 void jugando();
 void localizarValorCero();
+void leerArchivo();
 //matrices
 void llenarMatrizAleatoria();
 void llenarMatrizManual();
 void llenarMatrizAleatoriaNivelesMas();
 void llenarMatrizManualNivelesMas();
+void llenarTableroArchivo(vector<int> valoresTableroArchivo);
 matrizDinamica* matriz;
 matrizDinamica* matrizReinicio;
 vector<matrizDinamica*> tableros;
@@ -66,6 +72,11 @@ void llenarMatrizManualNivelesMas() {
     matriz = new matrizDinamica();
     matriz->completarManualNivelesMas(y, x, contadorNumerosNiveles);
 }
+//llenar matriz aleatoria niveles mas
+void llenarTableroArchivo(vector<int> valoresTableroArchivo) {
+    matriz = new matrizDinamica();
+    matriz->completarTableroArchivo(y, x, valoresTableroArchivo);
+}
 //estructuramos menu
 void menu() {
 
@@ -77,7 +88,8 @@ void menu() {
             "2) Ultimo reporte realizado\n"
             "3) Tabla de resultados\n"
             "4) Cambiar nombre\n"
-            "5) Salir" << endl;
+            "5) Jugar con carga de Archivo\n"
+            "6) Salir" << endl;
         try {
             cin >> opcion;
             switch (opcion)
@@ -124,6 +136,27 @@ void menu() {
                 cout << "* Nombre cambiado exitosamente *" << endl;
                 break;
             case 5:
+                archivoCorrecto=false;
+                verificarError=true;
+                cout << "-> Ingresa el nombre de tu archivo de texto\n";
+                while (archivoCorrecto==false||verificarError==false)
+                {
+                    leerArchivo();
+                }
+                for (int i = 0; i < contadorTemporalNiveles; i++)
+                {
+                    llenarTableroArchivo(valoresTableroArchivo[i]);
+                    cout << "* Tablero nivel " << i + 1 << " creado * " << endl;
+                    matriz->imprimir(x);
+                    cout << endl;
+                    tableros.push_back(matriz);
+                    tablerosReinicio.push_back(matriz);
+                }
+                cantidadNiveles=contadorTemporalNiveles;
+                jugando();
+                cicloRepetir = false;
+                break;
+            case 6:
                 cout << "****************** Saliendo ******************\n";
                 cicloRepetir = false;
                 break;
@@ -322,6 +355,7 @@ void jugando() {
             tablaReporteArreglo.push_back(agregarJuegoTabla);
             reportes();
             tableros.clear();
+            valoresTableroArchivo.clear();
             tablerosReinicio.clear();
             valoresPunteo.clear();
             valoresUsuarioPunteo.clear();
@@ -409,6 +443,112 @@ void tablaResultados() {
         tablaReporteArreglo[i].mostrarTabla();
     }
     system("pause");
+}
+void leerArchivo(){
+    contadorTemporalNiveles=0;
+    ifstream archivoLectura;
+    cin>>nombreArchivo;
+    cout << "->Ingresa la cantidad de filas del tablero" << endl;
+    cin >> x;
+    while (x < 2)
+    {
+        cout << "* La cantidad de filas tiene que tener minimo 2, ingrese nuevamente la cantidad *" << endl;
+        cin >> x;
+    }
+    cout << "->Ingresa la cantidad de columnas del tablero" << endl;
+    cin >> y;
+    while (y < 2)
+    {
+        cout << "* La cantidad de columnas tiene que tener minimo 2, ingrese nuevamente la cantidad *" << endl;
+        cin >> y;
+    }
+    archivoLectura.open(nombreArchivo+".txt",ios::in);
+    if(archivoLectura.fail()){
+        cout<<"****************** Escribe nuevamente el nombre de tu archivo de texto ******************\n";
+        archivoCorrecto=false;
+    }else{
+        archivoCorrecto=true;
+        verificarError=true;
+        while (getline(archivoLectura,cadenaTemporal))
+        {
+            contadorTemporalNiveles++;   
+            for (size_t i = 0; i < cadenaTemporal.length(); i++)
+            {
+                vectorCaracteres.push_back(cadenaTemporal[i]);
+            }
+            cadenaTemporal="";
+            for (size_t i = 0; i < vectorCaracteres.size(); i++)
+            {
+                
+                if (vectorCaracteres[i]==',')
+                {
+                    if (verificarError)
+                    {
+                        for (size_t i = 0; i < vectoresCaracteresTemporal.size(); i++)
+                        {
+                            if (stoi(cadenaTemporal)==vectoresCaracteresTemporal[i])
+                            {
+                                verificarError=false;
+                                archivoCorrecto=false;
+                                cout<<"* Error en sus datos ingresados, valores repetidos *"<<endl;
+                                
+                            }
+                        }
+                    }
+                    vectoresCaracteresTemporal.push_back(stoi(cadenaTemporal));
+                    cadenaTemporal="";
+                }else{
+                    cadenaTemporal=cadenaTemporal+vectorCaracteres[i];
+                }
+                if (i==vectorCaracteres.size()-1)
+                {
+                    if (verificarError)
+                    {
+                        for (size_t i = 0; i < vectoresCaracteresTemporal.size(); i++)
+                        {
+                            if (stoi(cadenaTemporal)==vectoresCaracteresTemporal[i])
+                            {
+                                verificarError=false;
+                                archivoCorrecto=false;
+                                cout<<"* Error en sus datos ingresados, valores repetidos *"<<endl;
+                            }
+                        }
+                    }
+                    vectoresCaracteresTemporal.push_back(stoi(cadenaTemporal));
+                }
+            }
+            valoresTableroArchivo.push_back(vectoresCaracteresTemporal);
+            if (verificarError)
+            {
+                if (static_cast<int>(vectoresCaracteresTemporal.size())!=x*y)
+                {
+                    verificarError=false;
+                    archivoCorrecto=false;
+                    cout<<"* Error en sus datos ingresados, tiene mas de la capacidad indicada *"<<endl;
+                }
+                for (size_t i = 0; i < vectoresCaracteresTemporal.size(); i++)
+                {
+                    if (vectoresCaracteresTemporal[i]<(x*y*contadorTemporalNiveles-(x*y))||
+                    vectoresCaracteresTemporal[i]>(x*y*contadorTemporalNiveles-1))
+                    {
+                        verificarError=false;
+                        archivoCorrecto=false;
+                        cout<<"* Error en sus datos ingresados, datos fuera de rango establecido *"<<endl;
+                    }
+                }
+
+            }
+            vectoresCaracteresTemporal.clear();
+            vectorCaracteres.clear();
+        }
+        if (!verificarError||!archivoCorrecto)
+        {
+            valoresTableroArchivo.clear();
+            cout<<"****************** Escribe nuevamente el nombre de tu archivo de texto ******************\n";
+        }
+        
+    }
+    archivoLectura.close();
 }
 
 // Ejecutar programa: Ctrl + F5 o menú Depurar > Iniciar sin depurar

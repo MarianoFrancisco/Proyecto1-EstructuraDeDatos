@@ -696,7 +696,6 @@ struct matrizDinamica
 		int almacenamiento = 0;
 		bool* verificarDato;
 		verificarDato = new bool[limite];
-		cout<<limite;
 		for (int i = 0; i < limite; i++)
 		{
 			verificarDato[i] = false;
@@ -764,6 +763,18 @@ struct matrizDinamica
 				}
 				ingresar(i, j, numeroAleatorio);
 				verificarRepitencia[almacenamiento] = true;
+			}
+		}
+	}
+	//llenamos tableros con archivo de entrada
+	void completarTableroArchivo(int valorX, int valorY,vector<int> valoresTableroArchivo) {
+		int contador=0;
+		for (int j = 0; j < valorY; j++)
+		{
+			for (int i = 0; i < valorX; i++)
+			{
+				ingresar(i, j, valoresTableroArchivo[contador]);
+				contador++;
 			}
 		}
 	}
